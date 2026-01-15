@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Env
+.env
+
+# DB / Docker
+pgdata/
+
+# Editor
+.vscode/
+.idea/
