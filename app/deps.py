@@ -5,8 +5,12 @@ from sqlalchemy.orm import Session
 from .db import SessionLocal
 from .models import User
 from .security import decode_token
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+
+security = HTTPBearer()
 
 def get_db():
     db = SessionLocal()
@@ -15,7 +19,11 @@ def get_db():
     finally:
         db.close()
 
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> User:
+    token = credentials.credentials
     try:
         payload = decode_token(token)
         email = payload.get("sub")

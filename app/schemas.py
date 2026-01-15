@@ -1,4 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List
+from pydantic import BaseModel, Field
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -17,6 +19,33 @@ class UserPublic(BaseModel):
     id: int
     email: EmailStr
     name: str
+
+    class Config:
+        from_attributes = True
+
+class MediaItem(BaseModel):
+    type: str = Field(pattern="^(image|audio|video)$")
+    url: str
+    title: Optional[str] = None
+
+class POICreate(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    lat: float
+    lng: float
+    description: Optional[str] = None
+    tags: List[str] = []
+    media: List[MediaItem] = []
+    type: Optional[str] = Field(default=None, max_length=60)
+
+class POIOut(BaseModel):
+    id: int
+    name: str
+    lat: float
+    lng: float
+    description: Optional[str]
+    tags: List[str]
+    media: List[MediaItem]
+    type: Optional[str]
 
     class Config:
         from_attributes = True
