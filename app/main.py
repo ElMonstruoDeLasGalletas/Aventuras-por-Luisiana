@@ -4,6 +4,7 @@ from . import models
 from .routers.auth import router as auth_router
 from .routers.pois import router as pois_router
 
+
 app = FastAPI(title="Louisiana Routes API")
 
 Base.metadata.create_all(bind=engine)

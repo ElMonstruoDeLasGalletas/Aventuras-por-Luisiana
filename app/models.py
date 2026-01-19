@@ -19,17 +19,28 @@ class POI(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+
     lat: Mapped[float] = mapped_column(Float, nullable=False)
     lng: Mapped[float] = mapped_column(Float, nullable=False)
 
     description: Mapped[str | None] = mapped_column(String, nullable=True)
 
+    # tags[] y media[] en Postgres como JSONB (ideal para rapidez y flexibilidad)
     tags: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     media: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)  # [{type,url,title?}]
 
     type: Mapped[str | None] = mapped_column(String(60), nullable=True, index=True)
 
+    # para sync y borrado suave
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
