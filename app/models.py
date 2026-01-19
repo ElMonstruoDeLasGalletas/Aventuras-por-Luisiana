@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import String, Integer, DateTime, Float, Boolean
+from sqlalchemy import ForeignKey, UniqueConstraint, String, Integer, DateTime, Float, Boolean, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -44,3 +44,22 @@ class POI(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+class Review(Base):
+    __tablename__ = "reviews"
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    poi_id: Mapped[int] = mapped_column(ForeignKey("pois.id"), nullable=False, index=True)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False, index=True) #1..5
+    content: Mapped[str] = mapped_column(String(1000), nullable=True)
+    is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), on_update=lambda: datetime.now(timezone.utc), nullable=False)
+    # TODO: photo
+    
+    __table_args__ = (
+        UniqueConstraint("user_id", "poi_id", name="uq_user_poi_review"), #Permitir una única review por POI
+        CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range")
+    )
+    
