@@ -51,6 +51,15 @@ class POIOut(BaseModel):
     class Config:
         from_attributes = True
     
+class POIUpdate(BaseModel):
+    name: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
+    media: Optional[list] = None
+    type: Optional[str] = None
+    
 class ReviewCreate(BaseModel):
     rating: int = Field(ge=1, le=5)
     comment: Optional[str] = Field(default=None, max_length=1000)
