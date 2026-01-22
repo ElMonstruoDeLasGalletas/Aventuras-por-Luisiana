@@ -1,10 +1,10 @@
-# 🚀 Preparación del proyecto
+# Preparación del proyecto
 
 Este documento explica cómo preparar el entorno de desarrollo para trabajar en el proyecto paso a paso.
 
 ---
 
-## 📋 Requisitos previos
+## Requisitos previos
 
 Antes de empezar, asegúrate de tener instalado:
 
@@ -14,9 +14,9 @@ Antes de empezar, asegúrate de tener instalado:
 
 ---
 
-## 🛠️ Preparación del entorno
+## Preparación del entorno
 
-### 1️⃣ Acceder a la carpeta del proyecto
+### 1 Acceder a la carpeta del proyecto
 
 Desde la terminal, navega hasta la carpeta del proyecto:
 
@@ -26,7 +26,7 @@ cd ruta/del/proyecto
 
 ---
 
-### 2️⃣ Crear el entorno virtual
+### 2 Crear el entorno virtual
 
 Crea un entorno virtual llamado `.venv` (el resto de comandos asumen este nombre):
 
@@ -36,7 +36,7 @@ python -m venv .venv
 
 ---
 
-### 3️⃣ Activar el entorno virtual
+### 3 Activar el entorno virtual
 
 En **Windows (PowerShell)**:
 
@@ -52,7 +52,7 @@ En **Windows (PowerShell)**:
 
 ---
 
-### 4️⃣ Levantar los servicios con Docker
+### 4 Levantar los servicios con Docker
 
 Arranca los contenedores definidos en `docker-compose.yml`:
 
@@ -64,7 +64,7 @@ Esto levantará el servidor y los servicios necesarios usando la configuración 
 
 ---
 
-### 5️⃣ Lanzar el servidor de desarrollo
+### 5 Lanzar el servidor de desarrollo
 
 Con el entorno virtual activado, ejecuta:
 
@@ -72,7 +72,7 @@ Con el entorno virtual activado, ejecuta:
 uvicorn app.main:app --reload
 ```
 
-#### ❗ Si el comando anterior no funciona
+#### Si el comando anterior no funciona
 
 Usa esta alternativa para asegurarte de que se utiliza el `uvicorn` del entorno virtual:
 
@@ -82,7 +82,7 @@ python -m uvicorn app.main:app --reload
 
 ---
 
-## ✅ Comprobación
+## Comprobación
 
 Si todo ha ido bien, el servidor debería estar disponible en:
 
