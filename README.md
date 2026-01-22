@@ -90,13 +90,13 @@ Si todo ha ido bien, el servidor debería estar disponible en:
 http://127.0.0.1:8000
 ```
 
-(El acceso a la base de datos está definido en el docker-compose.yml)
-
 Y la documentación automática de la API en:
 
 ```
 http://127.0.0.1:8000/docs
 ```
-
----
+El acceso a la base de datos está definido en el docker-compose.yml
+```
+http:localhost:8080
+```
 
