@@ -45,12 +45,24 @@ class POI(Base):
         nullable=False,
     )
 
+class Route(Base):
+    __tablename__ = "routes"
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str] = mapped_column(String, nullable=True)
+    poi_ids: Mapped[list] = mapped_column(JSONB, nullable=False)
+    is_deleted: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), on_update=lambda: datetime.now(timezone.utc), nullable=False) 
+    
+
 class Review(Base):
     __tablename__ = "reviews"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    poi_id: Mapped[int] = mapped_column(ForeignKey("pois.id"), nullable=False, index=True)
+    route_id: Mapped[int] = mapped_column(ForeignKey("routes.id"), nullable=False, index=True)
     rating: Mapped[int] = mapped_column(Integer, nullable=False, index=True) #1..5
     content: Mapped[str] = mapped_column(String(1000), nullable=True)
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -59,7 +71,7 @@ class Review(Base):
     # TODO: photo
     
     __table_args__ = (
-        UniqueConstraint("user_id", "poi_id", name="uq_user_poi_review"), #Permitir una única review por POI
+        UniqueConstraint("user_id", "route_id", name="uq_user_poi_review"), #Permitir una única review por POI
         CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range")
     )
     

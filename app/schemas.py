@@ -67,7 +67,7 @@ class ReviewCreate(BaseModel):
 class ReviewOut(BaseModel):
     id: int
     user_id: int
-    poi_id: int
+    route_id: int
     rating: int
     content: Optional[str]
     created_at: datetime
@@ -75,3 +75,23 @@ class ReviewOut(BaseModel):
     class Config:
         from_attributes = True
     
+class RouteCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    description: Optional[str] = None
+    poi_ids: List[int] = Field(default_factory=list, min_length=1)
+    
+class RouteOut(BaseModel):
+    id: int
+    name: str
+    dscription:  Optional[str]
+    poi_ids: List[int]
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+        
+class RouteImport(BaseModel):
+    name: str
+    description: Optional[str] = None
+    poi_ids: List[str]
