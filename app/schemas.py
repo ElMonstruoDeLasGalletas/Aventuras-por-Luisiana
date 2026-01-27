@@ -66,3 +66,18 @@ class ReviewOut(BaseModel):
     class Config:
         from_attributes = True
     
+# Schema para cuando el usuario crea/actualiza sus preferencias (lo que manda el frontend)
+class UserPreferencesCreate(BaseModel):
+    # Lista de tags que le interesan (ej: ["nature", "kayak", "photo"])
+    preferred_tags: List[str] = Field(default=[])
+
+# Schema para cuando el backend devuelve las preferencias (lo que recibe el frontend)
+class UserPreferencesOut(BaseModel):
+    id: int
+    user_id: int
+    preferred_tags: List[str]
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True  # Para que Pydantic pueda leer desde el modelo SQLAlchemy
