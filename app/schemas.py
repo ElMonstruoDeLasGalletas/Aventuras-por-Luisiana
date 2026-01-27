@@ -83,7 +83,7 @@ class RouteCreate(BaseModel):
 class RouteOut(BaseModel):
     id: int
     name: str
-    dscription:  Optional[str]
+    description:  Optional[str]
     poi_ids: List[int]
     created_at: datetime
     updated_at: datetime

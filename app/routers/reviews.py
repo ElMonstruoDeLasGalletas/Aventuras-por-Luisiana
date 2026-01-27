@@ -6,7 +6,7 @@ from ..deps import get_db, get_current_user
 from ..models import Review, User, POI
 from ..schemas import ReviewCreate, ReviewOut
 
-router = APIRouter(prefix="/pois/{poi_id}/reviews", tags=["reviews"])
+router = APIRouter(prefix="/route/{route_id}/reviews", tags=["reviews"])
 
 @router.post("", response_model=ReviewOut)
 def create_review(
