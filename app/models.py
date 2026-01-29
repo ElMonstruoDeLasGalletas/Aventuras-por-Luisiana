@@ -75,21 +75,47 @@ class Review(Base):
         CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range")
     )
     
+# Catálogo de tags disponibles en la aplicación
+class Tag(Base):
+    __tablename__ = "tags"
+    
+    # ID único del tag
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    
+    # Nombre del tag (ej: "nature", "kayak", "photo")
+    name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    
+    # Fecha de creación del tag
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+
+# Tabla intermedia: relación muchos a muchos entre User y Tag
+class UserPreferredTag(Base):
+    __tablename__ = "user_preferred_tags"
+    
+    # ID único de la relación
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    
+    # Usuario que tiene esta preferencia
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    
+    # Tag que le gusta al usuario
+    tag_id: Mapped[int] = mapped_column(ForeignKey("tags.id"), nullable=False, index=True)
+    
+    # Fecha en que añadió esta preferencia
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    __table_args__ = (
+        # Un usuario no puede tener el mismo tag duplicado
+        UniqueConstraint("user_id", "tag_id", name="uq_user_tag"),
+    )
+
+
+# Ya no necesitamos esta tabla, pero la dejamos vacía para mantener compatibilidad temporal
 class UserPreferences(Base):
     __tablename__ = "user_preferences"
     
-    # ID único de la preferencia
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    
-    # Usuario al que pertenecen estas preferencias (solo puede tener unas preferencias)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True, index=True)
-    
-    # Lista de tags que le gustan al usuario (ej: ["nature", "kayak", "photo"])
-    # Se guarda como JSON en la BD para poder meter varios tags
-    preferred_tags: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
-    
-    # Fecha en la que se crearon las preferencias (primera vez que configura el onboarding)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-    
-    # Fecha de última actualización (por si el usuario cambia sus preferencias más adelante)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), on_update=lambda: datetime.now(timezone.utc), nullable=False)
