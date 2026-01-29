@@ -59,22 +59,7 @@ class POIUpdate(BaseModel):
     tags: Optional[List[str]] = None
     media: Optional[list] = None
     type: Optional[str] = None
-    
-class ReviewCreate(BaseModel):
-    rating: int = Field(ge=1, le=5)
-    comment: Optional[str] = Field(default=None, max_length=1000)
 
-class ReviewOut(BaseModel):
-    id: int
-    user_id: int
-    route_id: int
-    rating: int
-    content: Optional[str]
-    created_at: datetime
-    
-    class Config:
-        from_attributes = True
-    
 class RouteCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     description: Optional[str] = None
@@ -95,3 +80,25 @@ class RouteImport(BaseModel):
     name: str
     description: Optional[str] = None
     poi_ids: List[str]
+
+class RouteUpdate(BaseModel):
+    name: Optional[str] =  None
+    description: Optional[str] = None
+    poi_ids: Optional[list] = None
+    
+class ReviewCreate(BaseModel):
+    route_id: int
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = Field(default=None, max_length=1000)
+
+class ReviewOut(BaseModel):
+    id: int
+    route_id: int
+    rating: int
+    content: Optional[str]
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+    
+    
