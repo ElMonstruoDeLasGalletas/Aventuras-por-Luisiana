@@ -75,3 +75,21 @@ class Review(Base):
         CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range")
     )
     
+class UserPreferences(Base):
+    __tablename__ = "user_preferences"
+    
+    # ID único de la preferencia
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    
+    # Usuario al que pertenecen estas preferencias (solo puede tener unas preferencias)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True, index=True)
+    
+    # Lista de tags que le gustan al usuario (ej: ["nature", "kayak", "photo"])
+    # Se guarda como JSON en la BD para poder meter varios tags
+    preferred_tags: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    
+    # Fecha en la que se crearon las preferencias (primera vez que configura el onboarding)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    # Fecha de última actualización (por si el usuario cambia sus preferencias más adelante)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), on_update=lambda: datetime.now(timezone.utc), nullable=False)
