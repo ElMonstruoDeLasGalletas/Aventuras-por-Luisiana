@@ -3,7 +3,19 @@ from fastapi import HTTPException
 from datetime import datetime
 
 from ..models import Route, POI, User
-from ..schemas import RouteCreate, RouteImport
+from ..schemas import RouteCreate, RouteImport, RouteUpdate
+
+
+def _get_route_or_404(db: Session, route_id: int) -> Route:
+    route = (
+        db.query(Route)
+        .filter(Route.id == route_id, Route.is_deleted == False)  # noqa
+        .first()
+    )
+    if not route:
+        raise HTTPException(404, "Route not found")
+    return route
+
 
 def _validate_poi_ids(db: Session, poi_ids: list[int]) -> None:
     if not poi_ids:
@@ -27,7 +39,6 @@ def _validate_poi_ids(db: Session, poi_ids: list[int]) -> None:
 def create_route(
     db: Session,
     data: RouteCreate,
-    current_user: User
 ) -> Route:
     _validate_poi_ids(db, data.poi_ids)
 
@@ -107,3 +118,29 @@ def export_route(db: Session, route_id: int):
         "created_at": route.created_at,
         "updated_at": route.updated_at,
     }
+
+def update_route(
+    db: Session,
+    route_id: int,
+    data: RouteUpdate,
+) -> Route:
+    route = _get_route_or_404(db, route_id)
+
+    payload = data.model_dump(exclude_unset=True)
+
+    for field, value in payload.items():
+        setattr(route, field, value)
+
+    db.commit()
+    db.refresh(route)
+    return route
+
+
+def delete_route(
+    db: Session,
+    route_id: int,
+) -> None:
+    route = _get_route_or_404(db, route_id)
+
+    route.is_deleted = True
+    db.commit()
