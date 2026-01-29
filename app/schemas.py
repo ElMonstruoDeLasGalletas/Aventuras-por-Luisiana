@@ -51,14 +51,49 @@ class POIOut(BaseModel):
     class Config:
         from_attributes = True
     
+class POIUpdate(BaseModel):
+    name: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
+    media: Optional[list] = None
+    type: Optional[str] = None
+
+class RouteCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    description: Optional[str] = None
+    poi_ids: List[int] = Field(default_factory=list, min_length=1)
+    
+class RouteOut(BaseModel):
+    id: int
+    name: str
+    description:  Optional[str]
+    poi_ids: List[int]
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+        
+class RouteImport(BaseModel):
+    name: str
+    description: Optional[str] = None
+    poi_ids: List[str]
+
+class RouteUpdate(BaseModel):
+    name: Optional[str] =  None
+    description: Optional[str] = None
+    poi_ids: Optional[list] = None
+    
 class ReviewCreate(BaseModel):
+    route_id: int
     rating: int = Field(ge=1, le=5)
     comment: Optional[str] = Field(default=None, max_length=1000)
 
 class ReviewOut(BaseModel):
     id: int
-    user_id: int
-    poi_id: int
+    route_id: int
     rating: int
     content: Optional[str]
     created_at: datetime
@@ -66,3 +101,18 @@ class ReviewOut(BaseModel):
     class Config:
         from_attributes = True
     
+# Schema para cuando el usuario crea/actualiza sus preferencias (lo que manda el frontend)
+class UserPreferencesCreate(BaseModel):
+    # Lista de tags que le interesan (ej: ["nature", "kayak", "photo"])
+    preferred_tags: List[str] = Field(default=[])
+
+# Schema para cuando el backend devuelve las preferencias (lo que recibe el frontend)
+class UserPreferencesOut(BaseModel):
+    id: int
+    user_id: int
+    preferred_tags: List[str]
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True  # Para que Pydantic pueda leer desde el modelo SQLAlchemy
