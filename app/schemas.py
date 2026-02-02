@@ -120,3 +120,18 @@ class UserPreferencesOut(BaseModel):
     
     class Config:
         from_attributes = True  # Para que Pydantic pueda leer desde el modelo SQLAlchemy
+        
+class FavouritesCreate(BaseModel):
+    
+    user_id: int
+    route_id: int
+
+class FavouritesOut(BaseModel):
+    id: int
+    route_id: int
+    user_id: int
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+# No hay update de favoritos porque al eliminar se quita de fav y al crearlo se pone.

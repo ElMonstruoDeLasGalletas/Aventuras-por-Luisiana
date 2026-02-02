@@ -93,3 +93,12 @@ class UserPreferences(Base):
     
     # Fecha de última actualización (por si el usuario cambia sus preferencias más adelante)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), on_update=lambda: datetime.now(timezone.utc), nullable=False)
+    
+class UserFavs(Base):
+    __tablename__ = "user_favs"
+   
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True, index=True)
+    route_id: Mapped[int] = mapped_column(ForeignKey("routes.id"), nullable=False, unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+        

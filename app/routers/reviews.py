@@ -42,7 +42,7 @@ def get_review(review_id: int, db: Session = Depends(get_db)):
     return review
 
 @router.put("/{review_id}", response_model=ReviewOut)
-def update_reviews_endreviewsnt(
+def update_review(
     review_id: int,
     data: ReviewUpdate,
     db: Session = Depends(get_db),
@@ -52,7 +52,7 @@ def update_reviews_endreviewsnt(
 
 
 @router.delete("/{review_id}", status_code=204)
-def delete_review_endreviewnt(
+def delete_review(
     review_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

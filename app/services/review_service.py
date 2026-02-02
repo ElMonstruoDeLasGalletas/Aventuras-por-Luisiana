@@ -4,7 +4,7 @@ from typing import Optional, List
 
 from ..deps import get_db, get_current_user
 from ..models import Review, User, Route
-from ..schemas import ReviewCreate, ReviewOut, ReviewUpdate
+from ..schemas import ReviewCreate, ReviewUpdate
 
 def _get_review_or_404(db: Session, review_id: int) -> Review:
     review = (
@@ -16,7 +16,7 @@ def _get_review_or_404(db: Session, review_id: int) -> Review:
         raise HTTPException(404, "Review not found")
     return review
 
-def create_review(db: Session, data: ReviewCreate, user: User) -> Review:
+def create_review(db: Session, data: ReviewCreate) -> Review:
 
     review = review(
         user_id=data.user_id,
