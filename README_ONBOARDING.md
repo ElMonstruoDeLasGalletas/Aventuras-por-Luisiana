@@ -348,9 +348,9 @@ GET /preferences/
 ## Pendiente
 
 ### Backend:
-- [ ] Endpoint para obtener POIs/Rutas filtrados por preferencias
-- [ ] Lógica de recomendación (scoring por tags coincidentes)
-- [ ] Sistema de puntuación: más tags coincidentes = mayor prioridad
+- [x] Endpoint para obtener POIs/Rutas filtrados por preferencias
+- [x] Lógica de recomendación (scoring por tags coincidentes)
+- [x] Implementado en `GET /routes/recommended`
 
 ### Frontend (Android):
 - [ ] Pantalla de onboarding con grid de tags

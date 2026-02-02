@@ -23,6 +23,18 @@ def list_routes(
 ):
     return route_service.list_routes(db)
 
+@router.get("/recommended", response_model=List[RouteOut])
+def get_recommended_routes_endpoint(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Devuelve rutas ordenadas por coincidencia con las preferencias del usuario.
+    Las rutas con más tags coincidentes aparecen primero.
+    Si el usuario no tiene preferencias, devuelve todas las rutas.
+    """
+    return route_service.get_recommended_routes(db, current_user.id)
+
 @router.get("/{route_id}", response_model=RouteOut)
 def get_route(
     route_id: int,

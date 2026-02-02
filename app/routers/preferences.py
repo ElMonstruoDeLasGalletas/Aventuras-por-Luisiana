@@ -60,7 +60,7 @@ def get_user_preferences(
     """
     Devuelve los tags que le gustan al usuario autenticado.
     """
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     # Obtener todas las relaciones user_preferred_tags del usuario
     user_tags = db.query(UserPreferredTag).filter(UserPreferredTag.user_id == user_id).all()
@@ -73,7 +73,7 @@ def get_user_preferences(
 
 
 # Añadir tags a las preferencias del usuario
-@router.post("/tags", response_model=UserPreferencesOut, status_code=status.HTTP_201_CREATED)
+@router.post("/user-tags", response_model=UserPreferencesOut, status_code=status.HTTP_201_CREATED)
 def add_user_preferences(
     preferences_data: UserPreferencesAdd,
     current_user: CurrentUser,
@@ -83,7 +83,7 @@ def add_user_preferences(
     Añade tags a las preferencias del usuario.
     Si un tag ya está en las preferencias, lo ignora (no duplica).
     """
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     # Verificar que todos los tag_ids existen
     existing_tags = db.query(Tag).filter(Tag.id.in_(preferences_data.tag_ids)).all()
@@ -128,7 +128,7 @@ def remove_user_preference(
     Elimina un tag específico de las preferencias del usuario.
     Si el tag no está en las preferencias, devuelve error 404.
     """
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     # Buscar la relación user_preferred_tag
     pref = db.query(UserPreferredTag).filter(
@@ -158,7 +158,7 @@ def remove_user_preferences(
     """
     Elimina múltiples tags de las preferencias del usuario.
     """
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     # Eliminar todas las relaciones que coincidan
     db.query(UserPreferredTag).filter(
