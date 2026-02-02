@@ -4,7 +4,7 @@ from typing import List
 
 from ..deps import get_db, get_current_user
 from ..models import User
-from ..schemas import RouteCreate, RouteOut, RouteImport
+from ..schemas import RouteCreate, RouteOut, RouteImport, RouteUpdate
 from ..services import route_service
 
 router = APIRouter(prefix="/routes", tags=["routes"])
@@ -44,3 +44,22 @@ def export_route(
     db: Session = Depends(get_db)
 ):
     return route_service.export_route(db, route_id)
+
+@router.put("/{route_id}", response_model=RouteOut)
+def update_route(
+    route_id: int,
+    data: RouteUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return route_service.update_review(db, route_id, data, current_user)
+
+
+@router.delete("/{route_id}", status_code=204)
+def delete_route(
+    route_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    route_service.delete_reviews(db, route_id, current_user)
+    return None

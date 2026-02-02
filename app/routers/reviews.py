@@ -4,7 +4,8 @@ from typing import Optional, List
 
 from ..deps import get_db, get_current_user
 from ..models import Review, User, Route
-from ..schemas import ReviewCreate, ReviewOut
+from ..schemas import ReviewCreate, ReviewOut, ReviewUpdate
+from ..services import review_service
 
 router = APIRouter(prefix="/route/{route_id}/reviews", tags=["reviews"])
 
@@ -19,16 +20,7 @@ def create_review(
     if not route:
         raise HTTPException(status_code=404, detail="Route not found")
 
-    review = Review(
-        user_id=data.user_id,
-        route_id=data.route_id,
-        rating=data.rating,
-        content=data.content,
-        is_deleted=data.is_deleted
-    )
-    db.add(review)
-    db.commit()
-    db.refresh(review)
+    review = review_service.create_review(db, data, current_user)
     return review
 
 @router.get("", response_model=List[ReviewOut])
@@ -36,17 +28,34 @@ def list_reviews(
     route_id: int,
     db: Session = Depends(get_db),
 ):
-    return (
-            db.query(Review)
-            .filter(Review.route_id == route_id, Review.is_deleted == False) #noqa
-            .order_by(Review.id.desc())
-            .limit(200)
-            .all()
-        )
+    reviews = review_service.list_reviews(route_id, db)
+    if reviews == []:
+        raise HTTPException(status_code=404, detail="Reviews not found")
+    
+    return reviews
 
 @router.get("/{review_id}", response_model=ReviewOut)
 def get_review(review_id: int, db: Session = Depends(get_db)):
-    review = db.query(Review).filter(Review.id == review_id, Review.is_deleted == False).first()  # noqa
+    review = review_service.get_review(db, review_id)  # noqa
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")
     return review
+
+@router.put("/{review_id}", response_model=ReviewOut)
+def update_reviews_endreviewsnt(
+    review_id: int,
+    data: ReviewUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return review_service.update_review(db, review_id, data, current_user)
+
+
+@router.delete("/{review_id}", status_code=204)
+def delete_review_endreviewnt(
+    review_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    review_service.delete_reviews(db, review_id, current_user)
+    return None

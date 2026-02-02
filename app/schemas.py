@@ -100,6 +100,10 @@ class ReviewOut(BaseModel):
     
     class Config:
         from_attributes = True
+        
+class ReviewUpdate(BaseModel):
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = Field(default=None, max_length=1000)
     
 # Schema para un Tag individual (solo lectura)
 class TagOut(BaseModel):
