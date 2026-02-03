@@ -15,7 +15,7 @@ def create_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return route_service.create_route(db, data, current_user)
+    return route_service.create_route(db, data)
 
 @router.get("", response_model=List[RouteOut])
 def list_routes(
@@ -50,16 +50,13 @@ def update_route(
     route_id: int,
     data: RouteUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ):
-    return route_service.update_review(db, route_id, data, current_user)
-
+    return route_service.update_route(db, route_id, data)
 
 @router.delete("/{route_id}", status_code=204)
 def delete_route(
     route_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ):
-    route_service.delete_reviews(db, route_id, current_user)
+    route_service.delete_route(db, route_id)
     return None
