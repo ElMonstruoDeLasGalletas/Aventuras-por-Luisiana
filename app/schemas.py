@@ -89,7 +89,7 @@ class RouteUpdate(BaseModel):
 class ReviewCreate(BaseModel):
     route_id: int
     rating: int = Field(ge=1, le=5)
-    comment: Optional[str] = Field(default=None, max_length=1000)
+    content: Optional[str] = Field(default=None, max_length=1000)
 
 class ReviewOut(BaseModel):
     id: int
@@ -103,7 +103,7 @@ class ReviewOut(BaseModel):
         
 class ReviewUpdate(BaseModel):
     rating: int = Field(ge=1, le=5)
-    comment: Optional[str] = Field(default=None, max_length=1000)
+    content: Optional[str] = Field(default=None, max_length=1000)
     
 # Schema para cuando el usuario crea/actualiza sus preferencias (lo que manda el frontend)
 class UserPreferencesCreate(BaseModel):
