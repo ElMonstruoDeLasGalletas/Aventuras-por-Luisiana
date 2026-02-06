@@ -144,3 +144,69 @@ def delete_route(
 
     route.is_deleted = True
     db.commit()
+
+
+# Rutas recomendadas
+def get_recommended_routes(db: Session, user_id: int):
+    """
+    Devuelve rutas ordenadas por coincidencia con las preferencias del usuario.
+    Si el usuario no tiene preferencias, devuelve todas las rutas sin orden especial.
+    """
+    from ..models import UserPreferredTag, Tag, POI
+    
+    # Obtener los tag_ids que le gustan al usuario
+    user_tag_ids = (
+        db.query(UserPreferredTag.tag_id)
+        .filter(UserPreferredTag.user_id == user_id)
+        .all()
+    )
+    user_tag_ids = [row[0] for row in user_tag_ids]
+    
+    # Si no tiene preferencias, devolver todas las rutas
+    if not user_tag_ids:
+        return list_routes(db)
+    
+    # Obtener los nombres de los tags del usuario
+    user_tags = (
+        db.query(Tag.name)
+        .filter(Tag.id.in_(user_tag_ids))
+        .all()
+    )
+    user_tag_names = {row[0] for row in user_tags}
+    
+    # Obtener todas las rutas activas
+    routes = (
+        db.query(Route)
+        .filter(Route.is_deleted == False)  # noqa
+        .all()
+    )
+    
+    # Calcular score para cada ruta
+    routes_with_score = []
+    for route in routes:
+        # Obtener los POIs de la ruta
+        pois = (
+            db.query(POI)
+            .filter(POI.id.in_(route.poi_ids), POI.is_deleted == False)  # noqa
+            .all()
+        )
+        
+        # Recopilar todos los tags de los POIs de esta ruta
+        route_tags = set()
+        for poi in pois:
+            if poi.tags:  # poi.tags es una lista JSONB
+                route_tags.update(poi.tags)
+        
+        # Calcular coincidencias
+        matches = len(user_tag_names & route_tags)
+        
+        routes_with_score.append({
+            "route": route,
+            "score": matches
+        })
+    
+    # Ordenar por score descendente
+    routes_with_score.sort(key=lambda x: x["score"], reverse=True)
+    
+    # Devolver solo las rutas (sin el score)
+    return [item["route"] for item in routes_with_score]

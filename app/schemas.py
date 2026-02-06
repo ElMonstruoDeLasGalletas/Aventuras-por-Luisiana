@@ -104,22 +104,40 @@ class ReviewOut(BaseModel):
 class ReviewUpdate(BaseModel):
     rating: int = Field(ge=1, le=5)
     content: Optional[str] = Field(default=None, max_length=1000)
+
+# Schema para un Tag individual (solo lectura)
+class TagOut(BaseModel):
+    id: int
+    name: str
     
-# Schema para cuando el usuario crea/actualiza sus preferencias (lo que manda el frontend)
-class UserPreferencesCreate(BaseModel):
-    # Lista de tags que le interesan (ej: ["nature", "kayak", "photo"])
-    preferred_tags: List[str] = Field(default=[])
+    class Config:
+        from_attributes = True
+
+
+# Schema para crear un nuevo tag en el catálogo (solo admin, normalmente)
+class TagCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=50)
+
+
+# Schema para añadir tags a las preferencias del usuario (lo que manda el frontend)
+class UserPreferencesAdd(BaseModel):
+    # Lista de IDs de tags que quiere añadir (ej: [1, 3, 5])
+    tag_ids: List[int] = Field(default=[])
+
+
+# Schema para eliminar tags de las preferencias del usuario
+class UserPreferencesRemove(BaseModel):
+    # Lista de IDs de tags que quiere eliminar (ej: [2, 4])
+    tag_ids: List[int] = Field(default=[])
+
 
 # Schema para cuando el backend devuelve las preferencias (lo que recibe el frontend)
 class UserPreferencesOut(BaseModel):
-    id: int
-    user_id: int
-    preferred_tags: List[str]
-    created_at: datetime
-    updated_at: datetime
+    # Lista de tags completos con su ID y nombre
+    tags: List[TagOut]
     
     class Config:
-        from_attributes = True  # Para que Pydantic pueda leer desde el modelo SQLAlchemy
+        from_attributes = True
         
 class FavouritesCreate(BaseModel):
     
