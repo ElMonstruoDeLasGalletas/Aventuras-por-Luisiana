@@ -45,6 +45,22 @@ def create_poi(db: Session, data: POICreate, user: User) -> POI:
     db.refresh(poi)
     return poi
 
+def create_pois(db: Session, pois: list[POI], user: User) -> list[POI]:
+    db_pois = []
+
+    for poi in pois:
+        db_poi = POI(
+            **poi.model_dump()
+        )
+        db.add(db_poi)
+        db_pois.append(db_poi)
+
+    db.commit()
+
+    for poi in db_pois:
+        db.refresh(poi)
+
+    return db_pois
 
 def list_pois(
     db: Session,

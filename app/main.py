@@ -13,12 +13,11 @@ app = FastAPI(title="Louisiana Routes API")
 
 Base.metadata.create_all(bind=engine)
 
-app.include_router(auth_router)
-
 @app.get("/")
 def health():
     return {"status": "ok"}
 
+app.include_router(auth_router)
 app.include_router(pois_router)
 app.include_router(preferences_router)
 app.include_router(reviews_router)

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy import ForeignKey, UniqueConstraint, String, Integer, DateTime, Float, Boolean, CheckConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 
 from .db import Base
@@ -13,6 +13,8 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    favourites = relationship("UserFavs", back_populates="user")
 
 class POI(Base):
     __tablename__ = "pois"
@@ -55,6 +57,8 @@ class Route(Base):
     is_deleted: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False) 
+
+    favourited_by = relationship("UserFavs", back_populates="route")
     
 
 class Review(Base):
@@ -96,9 +100,11 @@ class UserPreferences(Base):
     
 class UserFavs(Base):
     __tablename__ = "user_favs"
+    __table_args__ = (UniqueConstraint("user_id", "route_id", name="uq_user_route"),)
    
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True, index=True)
-    route_id: Mapped[int] = mapped_column(ForeignKey("routes.id"), nullable=False, unique=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    route_id: Mapped[int] = mapped_column(ForeignKey("routes.id"), nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-        
+    user = relationship("User", back_populates="favourites")
+    route = relationship("Route", back_populates="favourited_by")
