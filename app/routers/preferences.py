@@ -169,3 +169,28 @@ def remove_user_preferences(
     db.commit()
     
     return None
+
+
+# Eliminar una tag existente
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
+def remove_tags(
+    tag_data: TagCreate,
+    db: Session = Depends(get_db),
+):
+    """
+    Elimina un tag del catálogo.
+    Si el tag no existe, devuelve error 404.
+    """
+    # Verificar si el tag existe
+    existing = db.query(Tag).filter(Tag.name == tag_data.name.lower()).first()
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Tag '{tag_data.name}' no existe"
+        )
+    
+    # Elimina el tag
+    tag = existing
+    db.delete(tag)
+    db.commit()
+    return tag
