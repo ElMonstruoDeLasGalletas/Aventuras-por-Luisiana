@@ -3,19 +3,19 @@ from sqlalchemy.orm import Session
 from typing import Annotated, List
 
 from ..deps import get_db, get_current_user
-from ..models import Tag, UserPreferredTag
+from ..models import Tag, User, UserPreferredTag
 from ..schemas import TagOut, TagCreate, UserPreferencesAdd, UserPreferencesRemove, UserPreferencesOut
 
 router = APIRouter(prefix="/preferences", tags=["preferences"])
 
 # Dependency para obtener el usuario actual autenticado
-CurrentUser = Annotated[dict, Depends(get_current_user)]
-DbSession = Annotated[Session, Depends(get_db)]
+# CurrentUser = Annotated[dict, Depends(get_current_user)]
+# DbSession = Annotated[Session, Depends(get_db)]
 
 
 # Obtener todos los tags disponibles en el catálogo
 @router.get("/tags", response_model=List[TagOut])
-def get_all_tags(db: DbSession):
+def get_all_tags(db: Session = Depends(get_db)):
     """
     Devuelve todos los tags disponibles en el catálogo.
     No requiere autenticación.
@@ -28,8 +28,8 @@ def get_all_tags(db: DbSession):
 @router.post("/tags", response_model=TagOut, status_code=status.HTTP_201_CREATED)
 def create_tag(
     tag_data: TagCreate,
-    current_user: CurrentUser,
-    db: DbSession
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Crea un nuevo tag en el catálogo.
@@ -54,8 +54,8 @@ def create_tag(
 # Obtener las preferencias del usuario (tags que le gustan)
 @router.get("/", response_model=UserPreferencesOut)
 def get_user_preferences(
-    current_user: CurrentUser,
-    db: DbSession
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Devuelve los tags que le gustan al usuario autenticado.
@@ -76,8 +76,8 @@ def get_user_preferences(
 @router.post("/user-tags", response_model=UserPreferencesOut, status_code=status.HTTP_201_CREATED)
 def add_user_preferences(
     preferences_data: UserPreferencesAdd,
-    current_user: CurrentUser,
-    db: DbSession
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Añade tags a las preferencias del usuario.
@@ -121,8 +121,8 @@ def add_user_preferences(
 @router.delete("/tags/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_user_preference(
     tag_id: int,
-    current_user: CurrentUser,
-    db: DbSession
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Elimina un tag específico de las preferencias del usuario.
@@ -152,8 +152,8 @@ def remove_user_preference(
 @router.delete("/tags", status_code=status.HTTP_204_NO_CONTENT)
 def remove_user_preferences(
     preferences_data: UserPreferencesRemove,
-    current_user: CurrentUser,
-    db: DbSession
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Elimina múltiples tags de las preferencias del usuario.
