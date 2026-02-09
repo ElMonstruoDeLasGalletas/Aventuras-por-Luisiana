@@ -25,9 +25,15 @@ def create_review(db: Session, data: ReviewCreate, user: User) -> Review:
     db.refresh(review)
     return review
 
-def list_reviews(route_id: int, db: Session):
+def get_reviews(route_id: int, db: Session):
     return db.query(Review).filter(
         Review.route_id == route_id,
+        Review.is_deleted == False
+    ).order_by(Review.id.desc()).all()
+
+def get_reviews_from_user(db: Session, user_id: int):
+    return db.query(Review).filter(
+        Review.user_id == user_id,
         Review.is_deleted == False
     ).order_by(Review.id.desc()).all()
 
