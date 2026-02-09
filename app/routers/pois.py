@@ -19,6 +19,13 @@ def create_poi(
 ):
     return poi_service.create_poi(db, data, current_user)
 
+@router.post("/bulk", response_model=list[POIOut])
+def create_pois(
+    data: List[POICreate],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return poi_service.create_pois(db, data, current_user)
 
 @router.get("", response_model=List[POIOut])
 def list_pois(

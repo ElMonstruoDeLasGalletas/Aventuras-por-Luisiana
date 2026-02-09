@@ -1,0 +1,90 @@
+/pois/bulk
+
+[
+  {
+    "name": "French Quarter",
+    "lat": 29.9584,
+    "lng": -90.0644,
+    "description": "El corazón histórico de Nueva Orleans, famoso por su arquitectura colonial, música en vivo y ambiente vibrante.",
+    "tags": ["historia", "ciudad", "música"],
+    "media": [],
+    "type": "city"
+  },
+  {
+    "name": "Jackson Square",
+    "lat": 29.9574,
+    "lng": -90.0630,
+    "description": "Plaza histórica frente al Mississippi, rodeada de edificios icónicos como la Catedral de St. Louis.",
+    "tags": ["historia", "plaza", "cultura"],
+    "media": [],
+    "type": "landmark"
+  },
+  {
+    "name": "Oak Alley Plantation",
+    "lat": 30.0069,
+    "lng": -90.7768,
+    "description": "Plantación histórica conocida por su impresionante avenida de robles centenarios.",
+    "tags": ["plantación", "historia", "arquitectura"],
+    "media": [],
+    "type": "plantation"
+  },
+  {
+    "name": "Laura Plantation",
+    "lat": 30.0037,
+    "lng": -90.7750,
+    "description": "Plantación criolla con un enfoque en la vida cotidiana y las historias de las personas esclavizadas.",
+    "tags": ["historia", "plantación", "criollo"],
+    "media": [],
+    "type": "plantation"
+  },
+  {
+    "name": "Atchafalaya Basin",
+    "lat": 30.8470,
+    "lng": -91.5610,
+    "description": "El humedal más grande de EE.UU., famoso por sus pantanos, fauna salvaje y paisajes únicos.",
+    "tags": ["naturaleza", "pantano", "fauna"],
+    "media": [],
+    "type": "nature"
+  },
+  {
+    "name": "Lake Martin",
+    "lat": 30.1632,
+    "lng": -91.9970,
+    "description": "Reserva natural ideal para observar aves, caimanes y disfrutar de los paisajes de los pantanos de Louisiana.",
+    "tags": ["naturaleza", "aves", "pantano"],
+    "media": [],
+    "type": "nature"
+  }
+]
+
+
+/routes
+{
+    "name": "Ruta Plantaciones y Pantanos",
+    "description": "Para disfrutar del lado rural de Louisiana, entre plantaciones históricas y humedales.",
+    "poi_ids": [
+        3, 
+        4, 
+        5, 
+        6  
+    ]
+}
+
+{
+  "name": "Recorrido histórico de Nueva Orleans",
+  "description": "Un paseo por el French Quarter y sus edificios históricos.",
+  "poi_ids": [1, 2, 3]
+}
+
+{
+  "name": "Explorando los bayous",
+  "description": "Ruta para observar la fauna y los paisajes de los bayous de Louisiana.",
+  "poi_ids": [4, 5, 6]
+}
+
+{
+  "name": "Ruta gastronómica cajún",
+  "description": "Descubre los mejores restaurantes cajún y mercados locales.",
+  "poi_ids": [7, 8, 9]
+}
+

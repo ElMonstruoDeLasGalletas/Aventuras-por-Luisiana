@@ -146,6 +146,7 @@ def delete_route(
     db.commit()
 
 
+# Rutas recomendadas
 def get_recommended_routes(db: Session, user_id: int):
     """
     Devuelve rutas ordenadas por coincidencia con las preferencias del usuario.

@@ -89,7 +89,7 @@ class RouteUpdate(BaseModel):
 class ReviewCreate(BaseModel):
     route_id: int
     rating: int = Field(ge=1, le=5)
-    comment: Optional[str] = Field(default=None, max_length=1000)
+    content: Optional[str] = Field(default=None, max_length=1000)
 
 class ReviewOut(BaseModel):
     id: int
@@ -103,8 +103,8 @@ class ReviewOut(BaseModel):
         
 class ReviewUpdate(BaseModel):
     rating: int = Field(ge=1, le=5)
-    comment: Optional[str] = Field(default=None, max_length=1000)
-    
+    content: Optional[str] = Field(default=None, max_length=1000)
+
 # Schema para un Tag individual (solo lectura)
 class TagOut(BaseModel):
     id: int
@@ -138,3 +138,18 @@ class UserPreferencesOut(BaseModel):
     
     class Config:
         from_attributes = True
+        
+class FavouritesCreate(BaseModel):
+    
+    user_id: int
+    route_id: int
+
+class FavouritesOut(BaseModel):
+    id: int
+    route_id: int
+    user_id: int
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+# No hay update de favoritos porque al eliminar se quita de fav y al crearlo se pone.
