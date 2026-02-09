@@ -13,9 +13,13 @@ router = APIRouter(prefix="/favs", tags=["favs"])
 def create_favourite(
     data: FavouritesCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    print(f"create\ndb: {db}\ndata: {data}")
-    return fav_service.create_favourite(db, data)
+    return fav_service.create_favourite(
+        db, 
+        user_id = current_user.id,
+        route_id = data.route_id
+    )
 
 
 # @router.get("/all", response_model=List[FavouritesOut])

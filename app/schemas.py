@@ -140,8 +140,6 @@ class UserPreferencesOut(BaseModel):
         from_attributes = True
         
 class FavouritesCreate(BaseModel):
-    
-    user_id: int
     route_id: int
 
 class FavouritesOut(BaseModel):
