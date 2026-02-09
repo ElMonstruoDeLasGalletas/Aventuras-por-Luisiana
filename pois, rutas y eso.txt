@@ -85,6 +85,77 @@
 {
   "name": "Ruta gastronómica cajún",
   "description": "Descubre los mejores restaurantes cajún y mercados locales.",
-  "poi_ids": [7, 8, 9]
+  "poi_ids": [1, 4, 3]
 }
 
+/tags
+[
+  {
+    "id": 1,
+    "name": "cocodrilos"
+  },
+  {
+    "id": 2,
+    "name": "vistas"
+  },
+  {
+    "id": 3,
+    "name": "fotografías"
+  },
+  {
+    "id": 4,
+    "name": "travesía tranquila"
+  },
+  {
+    "id": 5,
+    "name": "travesía peligrosa"
+  },
+  {
+    "id": 6,
+    "name": "nado con cocodrilos"
+  },
+  {
+    "id": 7,
+    "name": "fauna salvaje"
+  },
+  {
+    "id": 8,
+    "name": "naturaleza abierta"
+  },
+  {
+    "id": 9,
+    "name": "aire puro"
+  },
+  {
+    "id": 10,
+    "name": "mirador"
+  },
+  {
+    "id": 11,
+    "name": "atardecer"
+  },
+  {
+    "id": 12,
+    "name": "amanecer"
+  },
+  {
+    "id": 13,
+    "name": "anochecer"
+  },
+  {
+    "id": 14,
+    "name": "cielo estrellado"
+  },
+  {
+    "id": 15,
+    "name": "zona de descanso"
+  },
+  {
+    "id": 16,
+    "name": "merendero"
+  },
+  {
+    "id": 17,
+    "name": "aparcamiento"
+  }
+]

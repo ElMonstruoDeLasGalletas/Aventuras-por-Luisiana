@@ -16,10 +16,11 @@ def _get_favourites_or_404(db: Session, favourite_id: int) -> UserFavs:
         raise HTTPException(404, "Favourite not found")
     return favourite
 
-def create_favourite(db: Session, data: FavouritesCreate) -> UserFavs:
+
+def create_favourite(db: Session, user_id: int, route_id: int) -> UserFavs:
     favourite = UserFavs(
-        user_id=data.user_id,
-        route_id=data.route_id,
+        user_id=user_id,
+        route_id=route_id,
     )
 
     try:
@@ -28,12 +29,10 @@ def create_favourite(db: Session, data: FavouritesCreate) -> UserFavs:
         db.refresh(favourite)
         return favourite
     
-    except IntegrityError as ie:
+    except IntegrityError:
         db.rollback()
-        print(f"Error de integridad: {ie.orig}")
-
         raise HTTPException(
-            status_code=400,
+            status_code=409,
             detail="Route already in favourites"
         )
     
@@ -55,4 +54,5 @@ def delete_favourite(
     favourite = _get_favourites_or_404(db, favourite_id)
     db.delete(favourite)
     db.commit()
+    db.refresh(favourite)
     return favourite
