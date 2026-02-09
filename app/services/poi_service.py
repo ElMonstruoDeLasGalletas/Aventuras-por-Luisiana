@@ -1,9 +1,11 @@
+import json
+from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional, List
 
 from app.models import POI, User
-from app.schemas import POICreate, POIUpdate
+from app.schemas import POICreate, POIImport, POIUpdate
 
 
 # --- helpers -------------------------------------------------
@@ -119,4 +121,58 @@ def delete_poi(
     poi = _get_poi_or_404(db, poi_id)
 
     poi.is_deleted = True
+    db.commit()
+
+def export_pois(db: Session, as_list=False):
+    """
+    Devuelve todos los POIs de la base de datos en formato lista de diccionarios,
+    lista para ser enviada como JSON en un endpoint.
+
+    Params:
+    -------
+    db : Session
+        Sesión de SQLAlchemy conectada a la base de datos.
+    as_list : bool, opcional (por defecto True)
+        Determina el formato de salida:
+        - False: devuelve una lista de diccionarios lista para enviar como JSON a la app.
+        - True: devuelve un string JSON serializado, listo para guardar en un archivo.
+
+    """
+    pois = db.query(POI).all()
+    data = []
+    for poi in pois:
+        data.append({
+            "id": poi.id,
+            "name": poi.name,
+            "lat": poi.lat,
+            "lng": poi.lng,
+            "description": poi.description,
+            "tags": poi.tags if hasattr(poi, "tags") else [],
+            # "tags": [t.name for t in poi.tags],
+            "media": poi.media,
+            "type": poi.type,
+            "is_deleted": poi.is_deleted,
+            "created_at": poi.created_at.isoformat(),
+            "updated_at": poi.updated_at.isoformat()
+        })
+    if as_list:
+        return data
+    return json.dumps(data, ensure_ascii=False, indent=2)
+
+def import_pois(db: Session, pois: List[POIImport]):
+    """
+    Recibe una lista de POIs en formato JSON y los añade a la base de datos.
+    Los tags se guardan como lista de strings por ahora.
+    """
+    for poi in pois:
+        existing = db.query(POI).filter_by(id=poi.id).first() if poi.id else None
+
+        if existing:
+            # update
+            for field, value in poi.model_dump().items():
+                setattr(existing, field, value)
+            existing.updated_at = datetime.now(timezone.utc)
+        else:
+            db.add(POI(**poi.model_dump()))
+
     db.commit()

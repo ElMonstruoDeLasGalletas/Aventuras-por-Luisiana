@@ -60,6 +60,19 @@ class POIUpdate(BaseModel):
     media: Optional[list] = None
     type: Optional[str] = None
 
+class POIImport(BaseModel):
+    id: Optional[int] = None
+    name: str
+    lat: float
+    lng: float
+    description: Optional[str] = None
+    tags: Optional[List[str]] = []
+    media: Optional[List[dict]] = []
+    type: Optional[str] = None
+    is_deleted: Optional[bool] = False
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
 class RouteCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     description: Optional[str] = None

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
 
 from ..deps import get_db, get_current_user
-from ..schemas import POICreate, POIOut
+from ..schemas import POICreate, POIImport, POIOut
 from ..models import User
 from ..services import poi_service
 from ..schemas import POIUpdate
@@ -26,6 +27,27 @@ def create_pois(
     current_user: User = Depends(get_current_user),
 ):
     return poi_service.create_pois(db, data, current_user)
+
+@router.post("/import")
+def import_pois(
+    pois: List[POIImport],
+    db: Session = Depends(get_db)
+):
+    """
+    Recibe una lista de POIs desde la app y los importa a la base de datos.
+    - Si el POI tiene id y existe -> se actualiza  
+    - Si no tiene id -> se crea un nuevo POI
+    """
+    poi_service.import_pois(db, pois)
+    return {"message": "POIs imported successfully"}
+
+@router.get("/export")
+def export_pois(
+    db: Session = Depends(get_db),
+    as_list: bool = True
+):
+    data = poi_service.export_pois(db, as_list=as_list)
+    return JSONResponse(content=data)
 
 @router.get("", response_model=List[POIOut])
 def list_pois(
