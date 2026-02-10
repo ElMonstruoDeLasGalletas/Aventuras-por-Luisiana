@@ -54,5 +54,4 @@ def delete_favourite(
     favourite = _get_favourites_or_404(db, favourite_id)
     db.delete(favourite)
     db.commit()
-    db.refresh(favourite)
-    return favourite
+    return {"message": "Favorite deleted successfully"}  
