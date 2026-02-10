@@ -87,7 +87,6 @@ class RouteUpdate(BaseModel):
     poi_ids: Optional[list] = None
     
 class ReviewCreate(BaseModel):
-    route_id: int
     rating: int = Field(ge=1, le=5)
     content: Optional[str] = Field(default=None, max_length=1000)
 

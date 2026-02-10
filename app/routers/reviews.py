@@ -7,9 +7,9 @@ from ..models import User, Route
 from ..schemas import ReviewCreate, ReviewOut, ReviewUpdate
 from ..services import review_service
 
-router = APIRouter(prefix="/route/{route_id}/reviews", tags=["reviews"])
+router = APIRouter(prefix="", tags=["reviews"])
 
-@router.post("", response_model=ReviewOut)
+@router.post("/route/{route_id}/reviews", response_model=ReviewOut)
 def create_review(
     route_id: int,
     data: ReviewCreate,
@@ -25,14 +25,21 @@ def create_review(
 
     return review_service.create_review(db, data, current_user)
 
-@router.get("", response_model=List[ReviewOut])
-def list_reviews(
+@router.get("/route/{route_id}/reviews", response_model=List[ReviewOut])
+def get_reviews(
     route_id: int,
     db: Session = Depends(get_db),
 ):
     return review_service.list_reviews(route_id, db)
 
-@router.get("/{review_id}", response_model=ReviewOut)
+@router.get("/user", response_model=list[ReviewOut])
+def get_reviews_from_user(
+    user_id: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return review_service.get_reviews_from_user(db, user_id.id)
+
+@router.get("/reviews/{review_id}", response_model=ReviewOut)
 def get_review(
     review_id: int,
     db: Session = Depends(get_db)
