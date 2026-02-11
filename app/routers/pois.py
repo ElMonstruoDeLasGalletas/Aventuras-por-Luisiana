@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List
 
-from ..deps import get_db, get_current_user
+from ..deps import get_db, get_current_user, require_roles
 from ..schemas import POICreate, POIOut
 from ..models import User
 from ..services import poi_service
@@ -10,12 +10,11 @@ from ..schemas import POIUpdate
 
 router = APIRouter(prefix="/pois", tags=["pois"])
 
-
 @router.post("", response_model=POIOut)
 def create_poi(
     data: POICreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "maquetador")),
 ):
     return poi_service.create_poi(db, data, current_user)
 

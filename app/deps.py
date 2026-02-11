@@ -40,11 +40,18 @@ def get_current_user(
 
 # Crea una función decoradora para no tener que romper el código que hemos hecho,
 # simplemente añadir el decorador como @require_roles("maquetador", "admin")
+# def require_roles(*allowed_roles):
+#     def decorator(func):
+#         async def wrapper(user = Depends(get_current_user), *args, **kwargs):
+#             if user.role.name not in allowed_roles:
+#                 raise HTTPException(status_code=403, detail="No tienes permisos")
+#             return await func(*args, **kwargs)
+#         return wrapper
+#     return decorator
+
 def require_roles(*allowed_roles):
-    def decorator(func):
-        async def wrapper(user = Depends(get_current_user), *args, **kwargs):
-            if user.role.name not in allowed_roles:
-                raise HTTPException(status_code=403, detail="No tienes permisos")
-            return await func(*args, **kwargs)
-        return wrapper
-    return decorator
+    def dependency(current_user: User = Depends(get_current_user)):
+        if current_user.role.name not in allowed_roles:
+            raise HTTPException(status_code=403, detail="No tienes permisos")
+        return current_user
+    return dependency
