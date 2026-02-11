@@ -12,3 +12,7 @@ pgdata/
 # Editor
 .vscode/
 .idea/
+
+# Archivos auxiliares de carga de datos
+load_data.py
+*.csv
