@@ -1,4 +1,4 @@
-/pois/bulk
+ /pois/bulk
 
 [
   {
