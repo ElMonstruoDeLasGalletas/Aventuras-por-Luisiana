@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..deps import get_db, get_current_user
+from ..deps import get_db, get_current_user, require_roles
 from ..models import User
 from ..schemas import RouteCreate, RouteOut, RouteImport, RouteUpdate
 from ..services import route_service

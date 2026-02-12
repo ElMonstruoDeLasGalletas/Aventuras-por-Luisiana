@@ -4,30 +4,38 @@ from sqlalchemy.orm import Session
 from ..deps import get_db, get_current_user
 from ..models import User
 from ..schemas import RegisterRequest, LoginRequest, TokenResponse, UserPublic
-from ..security import hash_password, verify_password, create_access_token
+from ..security import verify_password, create_access_token
+from ..services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserPublic)
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == data.email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    user = User(email=data.email, name=data.name, password_hash=hash_password(data.password))
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+    return auth_service.register_user(
+        db,
+        email=data.email,
+        name=data.name,
+        password=data.password,
+        role_id=data.role_id
+    )
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == data.email).first()
-    if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token(subject=user.email)
-    return TokenResponse(access_token=token)
+    return auth_service.login_user(db, email=data.email, password=data.password)
 
 @router.get("/me", response_model=UserPublic)
 def me(current_user: User = Depends(get_current_user)):
-    return current_user
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name,
+        "role": current_user.role.name  # <-- así solo devolvemos el string
+    }
+
+@router.delete("/user/{email}")
+def delete_user(
+    email: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)  # obtenemos al usuario que hace la petición
+):
+    return auth_service.delete_user(db, target_email=email, current_user=current_user)
