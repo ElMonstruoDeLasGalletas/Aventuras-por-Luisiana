@@ -25,4 +25,17 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserPublic)
 def me(current_user: User = Depends(get_current_user)):
-    return current_user
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name,
+        "role": current_user.role.name  # <-- así solo devolvemos el string
+    }
+
+@router.delete("/user/{email}")
+def delete_user(
+    email: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)  # obtenemos al usuario que hace la petición
+):
+    return auth_service.delete_user(db, target_email=email, current_user=current_user)

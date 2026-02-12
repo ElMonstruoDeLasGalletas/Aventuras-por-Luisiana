@@ -40,3 +40,21 @@ def login_user(db: Session, email: str, password: str):
     
     # Devolver dict listo para response_model
     return {"access_token": token}
+
+def delete_user(db: Session, target_email: str, current_user: User):
+    """
+    Borra un usuario solo si:
+    - current_user es admin, o
+    - current_user.email == target_email
+    """
+    # Solo admin o el propio usuario
+    if current_user.role.name.lower() != "admin" and current_user.email != target_email:
+        raise HTTPException(status_code=403, detail="You don't have permissions to delete this user!")
+
+    user = db.query(User).filter(User.email == target_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db.delete(user)
+    db.commit()
+    return {"detail": f"User {target_email} deleted correctly"}
