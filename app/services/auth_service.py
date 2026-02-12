@@ -5,10 +5,17 @@ from fastapi import HTTPException
 from ..models import User
 from ..security import create_access_token, hash_password, verify_password
 
+def normalize_role_id(role_id: int | None) -> int:
+    if role_id not in (1, 2):
+        return 3
+    return role_id
+
 def register_user(db: Session, email: str, name: str, password: str, role_id: int):
     # Comprueba si ya existe
     if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    role_id = normalize_role_id(role_id)
 
     # Crear el usuario
     user = User(
