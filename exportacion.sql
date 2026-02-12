@@ -1,187 +1,96 @@
--- Adminer 5.4.1 PostgreSQL 16.11 dump
+INSERT INTO pois (name, lat, lng, description, tags, media, type, is_deleted, created_at, updated_at) VALUES
+('🏚️ Jean Lafitte''s Blacksmith Shop', 29.9584, -90.0592, 'Taberna más antigua de USA (1722) - escondite de piratas', '["pirata","historia","taberna","french_quarter"]'::jsonb, '[{"type":"image","url":"/media/jean_lafitte.jpg","title":"Taberna 1722"},{"type":"audio","url":"/media/pirate_song.mp3"}]'::jsonb, 'historical_building', false, '2026-02-09 10:00:00', '2026-02-09 10:00:00'),
+('🐊 Honey Island Swamp', 30.2156, -89.5528, 'Pantano con mayor densidad de caimanes de Luisiana', '["caiman","swamp","wildlife","bayou"]'::jsonb, '[{"type":"video","url":"/media/honey_island.mp4","title":"Paseo en barca"},{"type":"image","url":"/media/alligator.jpg"}]'::jsonb, 'wildlife_area', false, '2026-02-09 11:00:00', '2026-02-09 11:00:00'),
+('🌳 Live Oak Plantation', 30.0642, -90.8836, 'Plantación con robles centenarios del sur profundo', '["plantation","oak_tree","history","civil_war"]'::jsonb, '[{"type":"image","url":"/media/live_oak.jpg","title":"Robles 300 años"},{"type":"image","url":"/media/plantation_house.jpg"}]'::jsonb, 'plantation', false, '2026-02-09 12:00:00', '2026-02-09 12:00:00'),
+('🎻 Cajun Music Hall', 30.4510, -92.3028, 'Corazón musical cajún - zydeco y fiddles', '["cajun","zydeco","music","dance"]'::jsonb, '[{"type":"video","url":"/media/cajun_dance.mp4","title":"Baile zydeco"},{"type":"audio","url":"/media/fiddle_tune.mp3"}]'::jsonb, 'cultural_center', false, '2026-02-09 13:00:00', '2026-02-09 13:00:00'),
+('🦪 Grand Isle Tarpons', 29.2058, -90.0003, 'Pesca de tarpon en el Golfo - paraíso pesquero', '["fishing","tarpon","gulf","beach"]'::jsonb, '[{"type":"image","url":"/media/tarpon_fishing.jpg","title":"Tarpon 100lb"},{"type":"video","url":"/media/gulf_waves.mp4"}]'::jsonb, 'fishing_spot', false, '2026-02-09 14:00:00', '2026-02-09 14:00:00');
 
-DROP TABLE IF EXISTS "pois";
-DROP SEQUENCE IF EXISTS pois_id_seq;
-CREATE SEQUENCE pois_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+-- 🔥 FRENCH QUARTER (Nueva Orleans)
+('⚜️ Jackson Square', 29.9578, -90.0634, 'Corazón del French Quarter - artistas y músicos callejeros', '["french_quarter","music","art"]'::jsonb, '[{"type":"image","url":"/media/jackson_square.jpg"}]'::jsonb, 'square', false, NOW(), NOW()),
+('🍹 Pat O''Brien''s', 29.9581, -90.0608, 'Creadores del Hurricane - cóctel oficial de Mardi Gras', '["cocktail","mardi_gras","bar"]'::jsonb, '[{"type":"image","url":"/media/hurricane_cocktail.jpg"}]'::jsonb, 'bar', false, NOW(), NOW()),
+('🎺 Preservation Hall', 29.9577, -90.0643, 'Jazz tradicional desde 1961 - NO te lo pierdas', '["jazz","music","live"]'::jsonb, '[{"type":"audio","url":"/media/preservation_jazz.mp3"}]'::jsonb, 'music_venue', false, NOW(), NOW()),
 
-CREATE TABLE "public"."pois" (
-    "id" integer DEFAULT nextval('pois_id_seq') NOT NULL,
-    "name" character varying(200) NOT NULL,
-    "lat" double precision NOT NULL,
-    "lng" double precision NOT NULL,
-    "description" character varying,
-    "tags" jsonb NOT NULL,
-    "media" jsonb NOT NULL,
-    "type" character varying(60),
-    "is_deleted" boolean NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    "updated_at" timestamptz NOT NULL,
-    CONSTRAINT "pois_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
+-- 🔥 PLANTACIONES
+('🏛️ Oak Alley Plantation', 30.0047, -90.7752, 'Túnel de 300 robles - LA plantación más fotografiada', '["plantation","oaks","iconic"]'::jsonb, '[{"type":"image","url":"/media/oak_alley.jpg"}]'::jsonb, 'plantation', false, NOW(), NOW()),
+('💀 Laura Plantation', 29.9975, -90.7758, 'Historias reales de esclavos - cuentos Br’er Rabbit', '["slavery","folklore","creole"]'::jsonb, '[{"type":"image","url":"/media/laura_plantation.jpg"}]'::jsonb, 'plantation', false, NOW(), NOW()),
 
-CREATE INDEX ix_pois_name ON public.pois USING btree (name);
+-- 🔥 BAYOUS & SWAMPS
+('🛶 Barataria Preserve', 29.7322, -90.1167, 'Senderos boardwalk + caimanes - Jean Lafitte National Park', '["swamp","hiking","alligators"]'::jsonb, '[{"type":"image","url":"/media/barataria_boardwalk.jpg"}]'::jsonb, 'nature_reserve', false, NOW(), NOW()),
+('🎣 Manchac Swamp', 30.2997, -90.5497, 'Pescadores cajún + airboats - swamp life real', '["fishing","airboat","cajun"]'::jsonb, '[{"type":"video","url":"/media/manchac_airboat.mp4"}]'::jsonb, 'swamp', false, NOW(), NOW()),
 
-CREATE INDEX ix_pois_type ON public.pois USING btree (type);
+-- 🔥 CAJÚN COUNTRY
+('🔥 Tabasco Factory', 29.9500, -91.4067, 'Salsa TABASCO original - tour + degustación picante', '["tabasco","factory","food"]'::jsonb, '[{"type":"image","url":"/media/tabasco_factory.jpg"}]'::jsonb, 'factory', false, NOW(), NOW()),
+('🐟 Avery Island Jungle Garden', 29.9025, -91.3969, 'Egrets + bambúes exóticos - jardín japonés', '["garden","birds","jungle"]'::jsonb, '[{"type":"image","url":"/media/avery_island.jpg"}]'::jsonb, 'garden', false, NOW(), NOW()),
 
+-- 🔥 GULF COAST
+('🏖️ Grand Isle State Park', 29.2094, -89.9942, 'Playas + pesca tarpon - gateway al Golfo', '["beach","fishing","gulf"]'::jsonb, '[{"type":"image","url":"/media/grand_isle_beach.jpg"}]'::jsonb, 'beach', false, NOW(), NOW()),
+('🪝 Port Fourchon', 29.1075, -90.1042, 'Puerto pesquero + rigs petroleros - working coast', '["fishing","oil","port"]'::jsonb, '[{"type":"image","url":"/media/port_fourchon.jpg"}]'::jsonb, 'port', false, NOW(), NOW()),
 
-DROP TABLE IF EXISTS "reviews";
-DROP SEQUENCE IF EXISTS reviews_id_seq;
-CREATE SEQUENCE reviews_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."reviews" (
-    "id" integer DEFAULT nextval('reviews_id_seq') NOT NULL,
-    "user_id" integer NOT NULL,
-    "route_id" integer NOT NULL,
-    "rating" integer NOT NULL,
-    "content" character varying(1000),
-    "is_deleted" boolean NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    "updated_at" timestamptz NOT NULL,
-    CONSTRAINT "reviews_pkey" PRIMARY KEY ("id"),
-    CONSTRAINT "rating_range" CHECK (((rating >= 1) AND (rating <= 5)))
-)
-WITH (oids = false);
-
-CREATE UNIQUE INDEX uq_user_poi_review ON public.reviews USING btree (user_id, route_id);
-
-CREATE INDEX ix_reviews_route_id ON public.reviews USING btree (route_id);
-
-CREATE INDEX ix_reviews_rating ON public.reviews USING btree (rating);
-
-CREATE INDEX ix_reviews_user_id ON public.reviews USING btree (user_id);
+-- 🔥 MUSIC & FOOD
+('🌶️ Prejean''s Restaurant', 30.2236, -92.0639, 'Crawfish étouffée + alligator - biblia cajún', '["cajun_food","crawfish","restaurant"]'::jsonb, '[{"type":"image","url":"/media/prejeans_crawfish.jpg"}]'::jsonb, 'restaurant', false, NOW(), NOW()),
+('🍤 Boudin Trail Stop', 30.1228, -92.1497, 'Boudin cajún auténtico - embutido de arroz + hígado', '["boudin","food","cajun"]'::jsonb, '[{"type":"image","url":"/media/boudin_trail.jpg"}]'::jsonb, 'food_stop', false, NOW(), NOW());
 
 
-DROP TABLE IF EXISTS "roles";
-DROP SEQUENCE IF EXISTS roles_id_seq;
-CREATE SEQUENCE roles_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+-- 🛤️ RUTAS COMPLETAS con POIs intermedios
+INSERT INTO routes (name, description, poi_ids, is_deleted, created_at, updated_at) VALUES
+-- Ruta 1: French Quarter → Swamps (5 POIs)
+('🏚️⚜️🛶 Bayou Pirate Adventure', 
+ 'French Quarter → Plantaciones → Caimanes reales', 
+ '[1,10,6,2]'::jsonb, false, NOW(), NOW()),
 
-CREATE TABLE "public"."roles" (
-    "id" integer DEFAULT nextval('roles_id_seq') NOT NULL,
-    "name" character varying NOT NULL,
-    CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
+-- Ruta 2: Plantations → Cajun Country (6 POIs)  
+('🌳🏛️🔥 Creole Deep South', 
+ 'Oak Alley → Laura → Tabasco Factory → Cajun music', 
+ '[11,12,15,16,4]'::jsonb, false, NOW(), NOW()),
 
-CREATE UNIQUE INDEX roles_name_key ON public.roles USING btree (name);
+-- Ruta 3: Ultimate Gulf Coast (5 POIs)
+('🐊🦪🌊 Louisiana Gulf Extreme', 
+ 'Honey Island → Grand Isle → Port Fourchon fishing', 
+ '[2,17,18,5]'::jsonb, false, NOW(), NOW()),
 
+-- Ruta 4: Foodie Cajun Trail (4 POIs)
+('🌶️🍤🎻 Cajun Food & Zydeco', 
+ 'Tabasco → Boudin stops → Cajun music explosion', 
+ '[15,19,20,4]'::jsonb, false, NOW(), NOW());
 
-DROP TABLE IF EXISTS "routes";
-DROP SEQUENCE IF EXISTS routes_id_seq;
-CREATE SEQUENCE routes_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."routes" (
-    "id" integer DEFAULT nextval('routes_id_seq') NOT NULL,
-    "name" character varying NOT NULL,
-    "description" character varying,
-    "poi_ids" jsonb NOT NULL,
-    "is_deleted" boolean NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    "updated_at" timestamptz NOT NULL,
-    CONSTRAINT "routes_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-
-DROP TABLE IF EXISTS "tags";
-DROP SEQUENCE IF EXISTS tags_id_seq;
-CREATE SEQUENCE tags_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."tags" (
-    "id" integer DEFAULT nextval('tags_id_seq') NOT NULL,
-    "name" character varying(50) NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    CONSTRAINT "tags_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-CREATE UNIQUE INDEX ix_tags_name ON public.tags USING btree (name);
-
-
-DROP TABLE IF EXISTS "user_favs";
-DROP SEQUENCE IF EXISTS user_favs_id_seq;
-CREATE SEQUENCE user_favs_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."user_favs" (
-    "id" integer DEFAULT nextval('user_favs_id_seq') NOT NULL,
-    "user_id" integer NOT NULL,
-    "route_id" integer NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    CONSTRAINT "user_favs_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-CREATE UNIQUE INDEX uq_user_route ON public.user_favs USING btree (user_id, route_id);
-
-CREATE INDEX ix_user_favs_route_id ON public.user_favs USING btree (route_id);
-
-CREATE INDEX ix_user_favs_user_id ON public.user_favs USING btree (user_id);
-
-
-DROP TABLE IF EXISTS "user_preferences";
-DROP SEQUENCE IF EXISTS user_preferences_id_seq;
-CREATE SEQUENCE user_preferences_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."user_preferences" (
-    "id" integer DEFAULT nextval('user_preferences_id_seq') NOT NULL,
-    "user_id" integer NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    "updated_at" timestamptz NOT NULL,
-    CONSTRAINT "user_preferences_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-CREATE UNIQUE INDEX ix_user_preferences_user_id ON public.user_preferences USING btree (user_id);
-
-
-DROP TABLE IF EXISTS "user_preferred_tags";
-DROP SEQUENCE IF EXISTS user_preferred_tags_id_seq;
-CREATE SEQUENCE user_preferred_tags_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."user_preferred_tags" (
-    "id" integer DEFAULT nextval('user_preferred_tags_id_seq') NOT NULL,
-    "user_id" integer NOT NULL,
-    "tag_id" integer NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    CONSTRAINT "user_preferred_tags_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-CREATE UNIQUE INDEX uq_user_tag ON public.user_preferred_tags USING btree (user_id, tag_id);
-
-CREATE INDEX ix_user_preferred_tags_tag_id ON public.user_preferred_tags USING btree (tag_id);
-
-CREATE INDEX ix_user_preferred_tags_user_id ON public.user_preferred_tags USING btree (user_id);
-
-
-DROP TABLE IF EXISTS "users";
-DROP SEQUENCE IF EXISTS users_id_seq;
-CREATE SEQUENCE users_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."users" (
-    "id" integer DEFAULT nextval('users_id_seq') NOT NULL,
-    "email" character varying(255) NOT NULL,
-    "name" character varying(120) NOT NULL,
-    "password_hash" character varying(255) NOT NULL,
-    "created_at" timestamptz NOT NULL,
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-CREATE UNIQUE INDEX ix_users_email ON public.users USING btree (email);
-
-INSERT INTO "users" ("id", "email", "name", "password_hash", "created_at") VALUES
-(1,	'user@example.com',	'string',	'$2b$12$IIyfvFmAVtHynPrc53r1PuEoZnY5bq94Hrrfjmn4VlN55LEGwG3Qa',	'2026-02-09 17:06:25.580014+00');
-
-ALTER TABLE ONLY "public"."reviews" ADD CONSTRAINT "reviews_route_id_fkey" FOREIGN KEY (route_id) REFERENCES routes(id) NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."reviews" ADD CONSTRAINT "reviews_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id) NOT DEFERRABLE;
-
-ALTER TABLE ONLY "public"."user_favs" ADD CONSTRAINT "user_favs_route_id_fkey" FOREIGN KEY (route_id) REFERENCES routes(id) NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."user_favs" ADD CONSTRAINT "user_favs_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id) NOT DEFERRABLE;
-
-ALTER TABLE ONLY "public"."user_preferences" ADD CONSTRAINT "user_preferences_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id) NOT DEFERRABLE;
-
-ALTER TABLE ONLY "public"."user_preferred_tags" ADD CONSTRAINT "user_preferred_tags_tag_id_fkey" FOREIGN KEY (tag_id) REFERENCES tags(id) NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."user_preferred_tags" ADD CONSTRAINT "user_preferred_tags_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id) NOT DEFERRABLE;
-
--- 2026-02-11 17:36:31 UTC
+INSERT INTO tags (name, created_at) VALUES
+('pirata', NOW()),
+('historia', NOW()),
+('taberna', NOW()),
+('french_quarter', NOW()),
+('caiman', NOW()),
+('swamp', NOW()),
+('wildlife', NOW()),
+('bayou', NOW()),
+('plantation', NOW()),
+('oak_tree', NOW()),
+('history', NOW()),
+('civil_war', NOW()),
+('cajun', NOW()),
+('zydeco', NOW()),
+('music', NOW()),
+('dance', NOW()),
+('fishing', NOW()),
+('tarpon', NOW()),
+('gulf', NOW()),
+('beach', NOW()),
+('art', NOW()),
+('cocktail', NOW()),
+('mardi_gras', NOW()),
+('bar', NOW()),
+('jazz', NOW()),
+('live', NOW()),
+('oaks', NOW()),
+('iconic', NOW()),
+('slavery', NOW()),
+('folklore', NOW()),
+('creole', NOW()),
+('hiking', NOW()),
+('alligators', NOW()),
+('airboat', NOW()),
+('tabasco', NOW()),
+('factory', NOW()),
+('food', NOW()),
+('garden', NOW()),
+('birds', NOW()),
+('jungle', NOW());
