@@ -183,7 +183,7 @@ class Geofence(Base):
     radius_meters: Mapped[float] = mapped_column(Float, nullable=False, default=200.0)
 
     # POI o ruta asociada (opcionales)
-    poi_id: Mapped[int | None] = mapped_column(ForeignKey("pois.id"), nullable=True, index=True)
+    poi_id: Mapped[int] = mapped_column(ForeignKey("pois.id"), nullable=False, index=True)
     route_id: Mapped[int | None] = mapped_column(ForeignKey("routes.id"), nullable=True, index=True)
 
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

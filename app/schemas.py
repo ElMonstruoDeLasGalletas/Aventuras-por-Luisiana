@@ -182,7 +182,7 @@ class GeofenceCreate(BaseModel):
     lat: float
     lng: float
     radius_meters: float = 200.0
-    poi_id: int | None = None
+    poi_id: int
     route_id: int | None = None
 
 
