@@ -5,10 +5,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 from .db import Base
 
-class Role(Base):
+class UserRole(Base):
     __tablename__ = "roles"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String, unique=True) # 'user', 'maquetador', 'admin'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True) # 'user', 'ld', 'admin'
 
 class User(Base):
     __tablename__ = "users"
@@ -17,11 +17,11 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role_id: Mapped[int] = mapped_column(Integer, ForeignKey("roles.id"))
+    role_id: Mapped[int] = mapped_column(Integer, ForeignKey("roles.id"), default=3)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     
     favourites = relationship("UserFavs", back_populates="user")
-    role = relationship("Role")
+    role = relationship("UserRole")
 
 class POI(Base):
     __tablename__ = "pois"

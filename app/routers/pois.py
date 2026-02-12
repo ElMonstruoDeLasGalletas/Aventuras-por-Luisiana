@@ -14,7 +14,7 @@ router = APIRouter(prefix="/pois", tags=["pois"])
 def create_poi(
     data: POICreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles("admin", "maquetador")),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     return poi_service.create_poi(db, data, current_user)
 

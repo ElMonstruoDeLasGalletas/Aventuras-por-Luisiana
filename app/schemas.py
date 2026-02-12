@@ -7,6 +7,7 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     name: str = Field(min_length=1, max_length=120)
     password: str = Field(min_length=6, max_length=128)
+    role_id: int
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -20,6 +21,7 @@ class UserPublic(BaseModel):
     id: int
     email: EmailStr
     name: str
+    role: str
 
     class Config:
         from_attributes = True

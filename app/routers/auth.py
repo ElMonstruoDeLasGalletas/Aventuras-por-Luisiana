@@ -13,11 +13,20 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == data.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    user = User(email=data.email, name=data.name, password_hash=hash_password(data.password))
+    user = User(
+        email=data.email, 
+        name=data.name, 
+        password_hash=hash_password(data.password), 
+        role_id=data.role_id)
     db.add(user)
     db.commit()
     db.refresh(user)
-    return user
+    return {
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role.name
+    }
 
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):

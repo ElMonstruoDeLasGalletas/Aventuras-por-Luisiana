@@ -16,7 +16,7 @@ Lo más común:
 class Role(Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)  # 'user', 'maquetador', 'admin'
+    name = Column(String, unique=True)  # 'user', 'ld', 'admin'
 
 class User(Base):
     __tablename__ = "users"
