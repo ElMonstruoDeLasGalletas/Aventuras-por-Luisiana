@@ -3,6 +3,15 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from datetime import datetime
 
+class UserPublic(BaseModel):
+    id: int
+    email: EmailStr
+    name: str
+    role: str
+
+    class Config:
+        from_attributes = True
+
 class RegisterRequest(BaseModel):
     email: EmailStr
     name: str = Field(min_length=1, max_length=120)
@@ -13,18 +22,10 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
-class TokenResponse(BaseModel):
+class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-
-class UserPublic(BaseModel):
-    id: int
-    email: EmailStr
-    name: str
-    role: str
-
-    class Config:
-        from_attributes = True
+    user: UserPublic
 
 class MediaItem(BaseModel):
     type: str = Field(pattern="^(image|audio|video)$")

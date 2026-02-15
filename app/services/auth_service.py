@@ -39,7 +39,16 @@ def login_user(db: Session, email: str, password: str):
     token = create_access_token(subject=user.email)
     
     # Devolver dict listo para response_model
-    return {"access_token": token}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "name": user.name,
+            "role": user.role.name
+        }
+    }
 
 def delete_user(db: Session, target_email: str, current_user: User):
     """
