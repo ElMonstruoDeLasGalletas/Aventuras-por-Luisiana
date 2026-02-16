@@ -49,6 +49,7 @@ def create_route(
         is_deleted=False,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
+        image_url=data.image_url
     )
 
     db.add(route)
@@ -92,6 +93,8 @@ def import_route(
         is_deleted=False,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
+        image_url=data.image_url
+        
     )
 
     db.add(route)
@@ -117,6 +120,8 @@ def export_route(db: Session, route_id: int):
         "poi_ids": route.poi_ids,
         "created_at": route.created_at,
         "updated_at": route.updated_at,
+        "image_url": route.image_url,
+
     }
 
 def update_route(

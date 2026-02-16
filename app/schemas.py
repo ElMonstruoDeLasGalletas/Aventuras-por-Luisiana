@@ -66,6 +66,7 @@ class RouteCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     description: Optional[str] = None
     poi_ids: List[int] = Field(default_factory=list, min_length=1)
+    image_url: Optional[str] = None 
     
 class RouteOut(BaseModel):
     id: int
@@ -74,6 +75,7 @@ class RouteOut(BaseModel):
     poi_ids: List[int]
     created_at: datetime
     updated_at: datetime
+    image_url: Optional[str]
     
     class Config:
         from_attributes = True
@@ -82,11 +84,13 @@ class RouteImport(BaseModel):
     name: str
     description: Optional[str] = None
     poi_ids: List[str]
+    image_url: Optional[str] = None
 
 class RouteUpdate(BaseModel):
     name: Optional[str] =  None
     description: Optional[str] = None
     poi_ids: Optional[list] = None
+    image_url: Optional[str] = None
     
 class ReviewCreate(BaseModel):
     route_id: int
