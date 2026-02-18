@@ -12,3 +12,6 @@ pgdata/
 # Editor
 .vscode/
 .idea/
+
+# Firebase
+firebase-credentials.json
