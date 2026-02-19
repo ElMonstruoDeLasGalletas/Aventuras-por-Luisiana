@@ -10,6 +10,7 @@ from .routers.preferences import router as preferences_router
 from .routers.reviews import router as reviews_router
 from .routers.routes import router as routes_router
 from .routers.favs import router as favs_router
+from .routers.notifications import router as notifications_router
 
 
 
@@ -41,3 +42,4 @@ app.include_router(preferences_router)
 app.include_router(reviews_router)
 app.include_router(routes_router)
 app.include_router(favs_router)
+app.include_router(notifications_router)

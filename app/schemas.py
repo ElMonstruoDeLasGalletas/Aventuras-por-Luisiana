@@ -124,6 +124,8 @@ class TagOut(BaseModel):
 class TagCreate(BaseModel):
     name: str = Field(min_length=1, max_length=50)
 
+class TagDelete(BaseModel):
+    name: str
 
 # Schema para añadir tags a las preferencias del usuario (lo que manda el frontend)
 class UserPreferencesAdd(BaseModel):
@@ -157,3 +159,55 @@ class FavouritesOut(BaseModel):
     class Config:
         from_attributes = True
 # No hay update de favoritos porque al eliminar se quita de fav y al crearlo se pone.
+
+# Schema para registrar el token FCM del dispositivo
+class DeviceTokenCreate(BaseModel):
+    token: str
+
+class DeviceTokenOut(BaseModel):
+    id: int
+    user_id: int
+    token: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Schema para recibir la ubicación del usuario
+class LocationCheck(BaseModel):
+    lat: float
+    lng: float
+
+
+# Schema para crear una geofence
+class GeofenceCreate(BaseModel):
+    name: str
+    message: str
+    lat: float
+    lng: float
+    radius_meters: float = 200.0
+    poi_id: int
+    route_id: int | None = None
+
+
+# Schema para devolver una geofence
+class GeofenceOut(BaseModel):
+    id: int
+    name: str
+    message: str
+    lat: float
+    lng: float
+    radius_meters: float
+    poi_id: int | None
+    route_id: int | None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Schema para devolver las geofences que se han disparado
+class TriggeredGeofencesOut(BaseModel):
+    triggered: List[GeofenceOut]

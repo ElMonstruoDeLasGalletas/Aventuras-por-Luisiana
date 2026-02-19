@@ -143,3 +143,68 @@ class UserFavs(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     user = relationship("User", back_populates="favourites")
     route = relationship("Route", back_populates="favourited_by")
+    
+    # Token FCM del dispositivo del usuario (para enviar notificaciones push)
+class DeviceToken(Base):
+    __tablename__ = "device_tokens"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    # Usuario al que pertenece este dispositivo
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+
+    # Token FCM que proporciona Firebase al dispositivo Android
+    token: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+
+    # Para desactivar tokens caducados sin borrarlos
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    user = relationship("User")
+
+
+# Zona geográfica que dispara una notificación al entrar
+class Geofence(Base):
+    __tablename__ = "geofences"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    # Nombre descriptivo de la zona (ej: "Entrada al Barrio Francés")
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+
+    # Mensaje que recibirá el usuario al entrar en la zona
+    message: Mapped[str] = mapped_column(String(500), nullable=False)
+
+    # Centro de la zona geográfica
+    lat: Mapped[float] = mapped_column(Float, nullable=False)
+    lng: Mapped[float] = mapped_column(Float, nullable=False)
+
+    # Radio en metros que define el área de la zona
+    radius_meters: Mapped[float] = mapped_column(Float, nullable=False, default=200.0)
+
+    # POI o ruta asociada (opcionales)
+    poi_id: Mapped[int] = mapped_column(ForeignKey("pois.id"), nullable=False, index=True)
+    route_id: Mapped[int | None] = mapped_column(ForeignKey("routes.id"), nullable=True, index=True)
+
+    is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    poi = relationship("POI")
+    route = relationship("Route")
+
+
+# Registro de notificaciones enviadas (para no repetir la misma al usuario)
+class NotificationLog(Base):
+    __tablename__ = "notification_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    geofence_id: Mapped[int] = mapped_column(ForeignKey("geofences.id"), nullable=False, index=True)
+    sent_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    user = relationship("User")
+    geofence = relationship("Geofence")

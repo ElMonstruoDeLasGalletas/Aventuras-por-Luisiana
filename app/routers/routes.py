@@ -13,7 +13,7 @@ router = APIRouter(prefix="/routes", tags=["routes"])
 def create_route(
     data: RouteCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     return route_service.create_route(db, data)
 
@@ -46,7 +46,7 @@ def get_route(
 def import_route(
     data: RouteImport,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     return route_service.import_route(db, data, current_user)
 
@@ -62,6 +62,7 @@ def update_route(
     route_id: int,
     data: RouteUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("admin", "ld"))
 ):
     return route_service.update_route(db, route_id, data)
 
@@ -69,6 +70,7 @@ def update_route(
 def delete_route(
     route_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("admin", "ld"))
 ):
     route_service.delete_route(db, route_id)
     return None

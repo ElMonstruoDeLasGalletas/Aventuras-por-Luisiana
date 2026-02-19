@@ -22,7 +22,7 @@ def create_poi(
 def create_pois(
     data: List[POICreate],
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     return poi_service.create_pois(db, data, current_user)
 
@@ -58,7 +58,7 @@ def update_poi_endpoint(
 def delete_poi_endpoint(
     poi_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     poi_service.delete_poi(db, poi_id, current_user)
     return None

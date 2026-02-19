@@ -284,3 +284,206 @@ URL: `http://localhost:8000/docs`
 - **Idempotencia:** `POST /preferences/` crea o actualiza (upsert) - no genera duplicados
 - **Validación:** Pydantic valida que `preferred_tags` sea lista de strings
 - **Performance:** Índice en `user_id` para consultas rápidas
+
+# Feature: notificaciones geolocalizadas
+
+**Rama:** `gonzalo/notificaciones-geolocalizadas`  
+**Fecha:** Febrero 2026
+
+---
+
+## Resumen
+
+Implementación del sistema de notificaciones geolocalizadas. El frontend Android envía las coordenadas del usuario al backend, que calcula si está dentro del radio de alguna geofence y envía una notificación push al dispositivo mediante Firebase Cloud Messaging (FCM).
+
+---
+
+## Archivos nuevos creados
+
+### 1. `app/routers/notifications.py`
+
+**Propósito:** Router con endpoints para gestionar tokens de dispositivo, comprobar ubicación y crear geofences.
+
+**Endpoints:**
+- `POST /notifications/device-token` — registra el token FCM del dispositivo Android del usuario autenticado
+- `POST /notifications/check-location` — recibe coordenadas del usuario y devuelve las geofences que se han disparado, enviando la push correspondiente
+- `POST /notifications/geofences` — crea una nueva geofence vinculada a un POI
+
+**Dependencias:** requiere autenticación (JWT token)
+
+### 2. `app/services/notification_service.py`
+
+**Propósito:** Lógica de negocio para notificaciones.
+
+**Funciones principales:**
+- `haversine_distance` — calcula la distancia en metros entre dos coordenadas geográficas
+- `register_device_token` — registra o actualiza el token FCM de un dispositivo
+- `get_triggered_geofences` — detecta qué geofences están dentro del radio del usuario y envía las pushs
+- `send_push_notification` — envía una notificación push real via FCM
+- `log_notification` — registra en base de datos que se envió la notificación
+- `create_geofence` — crea una nueva geofence en base de datos
+
+### 3. `alembic/` (carpeta completa)
+
+Alembic inicializado por primera vez en el proyecto para gestionar migraciones de base de datos.
+
+---
+
+## Archivos modificados
+
+### 1. `app/models.py`
+
+**Cambio:** tres nuevas clases al final del archivo.
+
+- `DeviceToken` — almacena el token FCM de cada dispositivo del usuario. Campo `is_active` para desactivar tokens caducados sin borrarlos.
+- `Geofence` — zona geográfica definida por coordenadas y radio en metros, vinculada obligatoriamente a un POI.
+- `NotificationLog` — registro de notificaciones enviadas para evitar repetir la misma notificación más de una vez al día por usuario y geofence.
+
+### 2. `app/schemas.py`
+
+**Cambio:** nuevos schemas Pydantic al final del archivo.
+
+- `DeviceTokenCreate` / `DeviceTokenOut` — para registrar y devolver tokens de dispositivo
+- `LocationCheck` — coordenadas que envía el frontend
+- `GeofenceCreate` / `GeofenceOut` — para crear y devolver geofences
+- `TriggeredGeofencesOut` — lista de geofences disparadas que devuelve el endpoint de check-location
+
+### 3. `app/main.py`
+
+**Cambio:** import y registro del nuevo router.
+
+```python
+from .routers.notifications import router as notifications_router
+app.include_router(notifications_router)
+```
+
+### 4. `.gitignore`
+
+**Cambio:** añadida línea para excluir las credenciales de Firebase.
+
+```
+# Firebase
+firebase-credentials.json
+```
+
+### 5. `requirements.txt`
+
+**Cambio:** añadida dependencia `firebase-admin` para la integración con FCM.
+
+---
+
+## Base de datos
+
+### nueva tabla: `device_tokens`
+
+| campo | tipo | descripción |
+|-------|------|-------------|
+| id | integer | primary key |
+| user_id | integer | foreign key a `users.id` |
+| token | varchar(255) | token FCM del dispositivo (único) |
+| is_active | boolean | indica si el token sigue activo |
+| created_at | timestamp | fecha de creación |
+| updated_at | timestamp | fecha de última actualización |
+
+### nueva tabla: `geofences`
+
+| campo | tipo | descripción |
+|-------|------|-------------|
+| id | integer | primary key |
+| name | varchar(200) | nombre descriptivo de la zona |
+| message | varchar(500) | mensaje que recibirá el usuario |
+| lat | float | latitud del centro de la zona |
+| lng | float | longitud del centro de la zona |
+| radius_meters | float | radio en metros (por defecto 200) |
+| poi_id | integer | foreign key a `pois.id` (obligatorio) |
+| route_id | integer | foreign key a `routes.id` (opcional) |
+| is_deleted | boolean | borrado suave |
+| created_at | timestamp | fecha de creación |
+| updated_at | timestamp | fecha de última actualización |
+
+### nueva tabla: `notification_logs`
+
+| campo | tipo | descripción |
+|-------|------|-------------|
+| id | integer | primary key |
+| user_id | integer | foreign key a `users.id` |
+| geofence_id | integer | foreign key a `geofences.id` |
+| sent_at | timestamp | momento en que se envió la notificación |
+
+**Migraciones generadas:**
+- `05d15f3f402b_add_geofences_notification_tables.py`
+- `a9af52b1ae97_geofence_poi_required.py`
+
+---
+
+## Firebase
+
+El proyecto usa Firebase Cloud Messaging (FCM) para el envío de notificaciones push a Android.
+
+**Configuración necesaria:**
+- archivo `firebase-credentials.json` en la raíz del proyecto (no incluido en el repositorio)
+- variable de entorno opcional `FIREBASE_CREDENTIALS_PATH` para indicar una ruta alternativa al archivo
+
+El archivo de credenciales se obtiene desde la consola de Firebase en configuración del proyecto → cuentas de servicio → generar nueva clave privada. Debe compartirse con el equipo por un canal privado, nunca subirlo a GitHub.
+
+---
+
+## Lógica de proximidad
+
+La detección de proximidad usa la **fórmula de Haversine**, que calcula la distancia real en metros entre dos puntos geográficos teniendo en cuenta la curvatura de la Tierra. Es más precisa que una simple diferencia de coordenadas.
+
+**Anti-spam:** un usuario no recibe la misma notificación de la misma geofence más de una vez al día. El sistema comprueba el `notification_log` antes de enviar.
+
+---
+
+## Testing manual (Swagger UI)
+
+URL: `http://localhost:8000/docs`
+
+### Flujo de prueba:
+
+1. `POST /auth/register` — crear usuario
+2. `POST /auth/login` — obtener token
+3. botón "Authorize" — introducir token
+4. `POST /notifications/geofences` — crear geofence con body:
+```json
+{
+  "name": "Entrada al Barrio Francés",
+  "message": "¡Bienvenido al Barrio Francés!",
+  "lat": 29.9584,
+  "lng": -90.0644,
+  "radius_meters": 200,
+  "poi_id": 1
+}
+```
+5. `POST /notifications/check-location` — comprobar ubicación con body:
+```json
+{
+  "lat": 29.9584,
+  "lng": -90.0644
+}
+```
+6. verificar que la geofence aparece en `triggered`
+
+---
+
+## Pendiente
+
+### backend:
+- [ ] endpoint para listar geofences existentes
+- [ ] endpoint para editar o desactivar una geofence
+- [ ] restringir creación de geofences solo a usuarios con rol admin
+
+### frontend (Android):
+- [ ] integrar Firebase SDK en la app Android
+- [ ] registrar el token FCM al iniciar sesión via `POST /notifications/device-token`
+- [ ] enviar coordenadas periódicamente via `POST /notifications/check-location`
+
+---
+
+## notas técnicas
+
+- **autenticación requerida:** todos los endpoints de `/notifications/` requieren JWT token válido
+- **un poi por geofence:** cada geofence debe estar vinculada a un POI existente
+- **tokens inactivos:** los tokens FCM caducados se marcan como `is_active=false` en lugar de borrarse, para mantener el historial
+- **firebase inicialización:** Firebase se inicializa una sola vez al arrancar el servidor comprobando `firebase_admin._apps`
