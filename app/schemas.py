@@ -124,6 +124,8 @@ class TagOut(BaseModel):
 class TagCreate(BaseModel):
     name: str = Field(min_length=1, max_length=50)
 
+class TagDelete(BaseModel):
+    name: str
 
 # Schema para añadir tags a las preferencias del usuario (lo que manda el frontend)
 class UserPreferencesAdd(BaseModel):

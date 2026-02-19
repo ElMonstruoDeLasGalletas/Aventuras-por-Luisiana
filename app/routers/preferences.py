@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import Annotated, List
 
-from ..deps import get_db, get_current_user
+from ..deps import get_db, get_current_user, require_roles
 from ..models import Tag, User, UserPreferredTag
-from ..schemas import TagOut, TagCreate, UserPreferencesAdd, UserPreferencesRemove, UserPreferencesOut
+from ..schemas import TagDelete, TagOut, TagCreate, UserPreferencesAdd, UserPreferencesRemove, UserPreferencesOut
 
 router = APIRouter(prefix="/preferences", tags=["preferences"])
 
@@ -29,7 +29,7 @@ def get_all_tags(db: Session = Depends(get_db)):
 def create_tag(
     tag_data: TagCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     """
     Crea un nuevo tag en el catálogo.
@@ -174,23 +174,23 @@ def remove_user_preferences(
 # Eliminar una tag existente
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 def remove_tags(
-    tag_data: TagCreate,
+    tag_name: str = Query(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("admin", "ld"))
 ):
     """
     Elimina un tag del catálogo.
     Si el tag no existe, devuelve error 404.
     """
     # Verificar si el tag existe
-    existing = db.query(Tag).filter(Tag.name == tag_data.name.lower()).first()
+    existing = db.query(Tag).filter(Tag.name == tag_name.lower()).first()
     if not existing:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Tag '{tag_data.name}' no existe"
+            detail=f"Tag '{tag_name}' no existe"
         )
     
     # Elimina el tag
-    tag = existing
-    db.delete(tag)
+    db.delete(existing)
     db.commit()
-    return tag
+    return {"deleted_tag": tag_name, "deleted_by": current_user.email}

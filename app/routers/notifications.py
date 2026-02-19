@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..deps import get_db, get_current_user
+from ..deps import get_db, get_current_user, require_roles
 from ..models import User
 from ..schemas import DeviceTokenCreate, DeviceTokenOut, LocationCheck, GeofenceCreate, GeofenceOut, TriggeredGeofencesOut
 from ..services import notification_service
@@ -41,7 +41,7 @@ def check_location(
 def create_geofence(
     data: GeofenceCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles("admin", "ld")),
 ):
     return notification_service.create_geofence(
         db,

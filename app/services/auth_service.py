@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from ..models import User
+from ..models import DeviceToken, NotificationLog, Review, User
 from ..security import create_access_token, hash_password, verify_password
 
 def normalize_role_id(role_id: int | None) -> int:
@@ -61,6 +61,10 @@ def delete_user(db: Session, target_email: str, current_user: User):
     user = db.query(User).filter(User.email == target_email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
+    db.query(NotificationLog).filter(NotificationLog.user_id == user.id).delete()
+    db.query(DeviceToken).filter(DeviceToken.user_id == user.id).delete()
+    db.query(Review).filter(Review.user_id == user.id).delete()
 
     db.delete(user)
     db.commit()
